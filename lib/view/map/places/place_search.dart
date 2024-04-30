@@ -61,7 +61,9 @@ class _PlaceSearchPageState extends State<PlaceSearchPage> {
                   padding: const EdgeInsets.all(15),
                   child: GestureDetector(
                     onTap: () {
-                      Get.back();
+                      Get.back(result: (latlng:LatLng(
+                          placeModel.places![index].location!.latitude!,
+                          placeModel.places![index].location!.longitude!),name:placeModel.places![index].displayName!.text!));
                       Get.find<HomeViewModel>().animateCamera(LatLng(
                           placeModel.places![index].location!.latitude!,
                           placeModel.places![index].location!.longitude!));

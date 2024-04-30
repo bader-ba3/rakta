@@ -114,7 +114,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: ApplePayButton(
-                      onPressed: selected!=null||textEditingController.text.isNotEmpty?() => _handleApplePayPress(context,controller,(selected??int.parse(textEditingController.text)).toDouble()):null,
+                     type: ApplePayButtonType.addMoney,
+                      onPressed: selected!=null||textEditingController.text.isNotEmpty?() async {
+                        bool _ = await controller.handleApplePayPress(context,(selected??int.parse(textEditingController.text)).toDouble());
+                        if(_){
+                          controller.addBalance((selected??int.parse(textEditingController.text)).toDouble());
+                        }
+                      }:null,
                     ),
                   ),
                 ),
@@ -124,25 +130,5 @@ class _PaymentScreenState extends State<PaymentScreen> {
         }
       ),
     );
-  }
-
-
-  void _handleApplePayPress(context,controller,double selected) async {
-    try {
-      if (Stripe.instance.isApplePaySupported.value) {
-        bool paymentSuccessful = await controller.payWithApplePay(selected) ?? false;
-        if (paymentSuccessful) {
-          log('payment successful');
-        } else {
-          log('payment failed');
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Apple pay is not supported in this device'),
-        ));
-      }
-    } catch (exception) {
-      log(exception.toString());
-    }
   }
 }

@@ -11,6 +11,7 @@ import 'package:rakta/view/card/card.dart';
 import 'package:rakta/view/home/home.dart';
 import 'package:rakta/view/map/places/place_search.dart';
 import 'package:rakta/view/profile/profile.dart';
+import 'package:rakta/view/taxi/taxi_home.dart';
 
 import '../map/home_map.dart';
 
@@ -53,7 +54,7 @@ class _HomePageState extends State<HomePage> {
                 }),
             CircularMenuItem(
               onTap:(){
-                Get.to(()=>PlaceSearchPage());
+                Get.to(()=>TaxiHome());
               },
               color: Colors.white,
                 // border: Border.all(color: Colors.black),

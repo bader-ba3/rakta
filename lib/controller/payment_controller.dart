@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
@@ -30,9 +31,6 @@ class PaymentController extends GetxController{
       });
       final clientSecret = paymentIntentResponse!['client_secret'];
       await Stripe.instance.confirmApplePayPayment(clientSecret);
-      balance=amount+balance;
-      Get.back();
-      update();
       return true;
     } on PlatformException catch (exception) {
       log(exception.message ?? 'Something went wrong');
@@ -42,7 +40,11 @@ class PaymentController extends GetxController{
     }
     return false;
   }
-
+  addBalance(amount){
+    balance=amount+balance;
+    Get.back();
+    update();
+  }
   Future<Map<String, dynamic>?> _getPaymentIntent(
       Map<String, dynamic> data) async {
     try {
@@ -59,5 +61,27 @@ class PaymentController extends GetxController{
       log(exception.toString());
     }
     return null;
+  }
+
+
+  Future<bool> handleApplePayPress(context,double selected) async {
+    try {
+      //if (Stripe.instance.isApplePaySupported.value) {
+        return await payWithApplePay(selected) ?? false;
+        // if (paymentSuccessful) {
+        //   log('payment successful');
+        // } else {
+        //   log('payment failed');
+        // }
+      // } else {
+      //   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      //     content: Text('Apple pay is not supported in this device'),
+      //   ));
+      //   return false;
+      // }
+    } catch (exception) {
+      log(exception.toString());
+    }
+    return false;
   }
 }

@@ -50,10 +50,9 @@ dependencies:
   uni_links:
   appcheck:
   uae_pass_flutter:
-
-
-
-
+  another_stepper:
+  slider_button:
+  animated_flip_counter:
 
 
   firebase_core: ^2.24.2
@@ -64,13 +63,12 @@ dependencies:
   fluttertoast:
   url_launcher:
   google_fonts:
-  dots_indicator:
-  intl_phone_field:
   http:
   intl:
   showcaseview:
   flutter_compass:
   hive_flutter:
+  geolocator:
 
 dev_dependencies:
   flutter_test:

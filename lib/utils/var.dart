@@ -8,6 +8,11 @@ import '../model/user_model.dart';
 import 'data.dart';
 
 class Const {
+  static const tripStatusSearchDriver = "tripStatusSearchDriver";
+  static const tripStatusWaitingDriver = "tripStatusWaitingDriver";
+  static const tripStatusTripStarted = "tripStatusTripStarted";
+  static const tripStatusTripPaying = "tripStatusTripPaying";
+
   static const String orderCollection = "Orders";
   static const String userCollection = "Users";
   static const String tripCollection = "Trips";

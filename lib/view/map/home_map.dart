@@ -171,8 +171,7 @@ class _HomeMapPageState extends State<HomeMapPage> {
                 points: ridesPloy,fillColor: Colors.green.withOpacity(0.2),strokeWidth: 2)
               },
               onMapCreated: (controller) async {
-                String mapStyle =
-                await rootBundle.loadString('assets/map_style.json');
+                String mapStyle = await rootBundle.loadString('assets/map_style.json');
                 controller.setMapStyle(mapStyle);
                 homeViewModel.controller = Completer();
                 homeViewModel.controller.complete(controller);

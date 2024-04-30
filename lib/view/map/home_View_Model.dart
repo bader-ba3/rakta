@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -29,11 +30,24 @@ class HomeViewModel extends GetxController {
   TripStatus? get currentTrip => tripViewModel.currentTrip.tpStatus;
 
   String? get riderId => tripViewModel.currentTrip.tpRider;
+
   final Set<Polyline> _polyLines = {};
 
   Set<Polyline> get polyLines => _polyLines;
 
   LocationModel? shoosLocation;
+  Position? userPosition ;
+String fromAddress='';
+
+  HomeViewModel(){
+    Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high).then((value) {
+      userPosition = value;
+        getLocationName(LatLng(value.latitude, value.longitude)).then((value) {
+          fromAddress = value.places!.first.displayName!.text!;
+          update();
+        });
+    });
+  }
 
   cleaMarkers() {
     markers.clear();
@@ -952,4 +966,5 @@ class HomeViewModel extends GetxController {
   Future<PlaceModel> getLocationName(LatLng location) {
     return placeViewModel.getLocationName(location);
   }
+
 }
