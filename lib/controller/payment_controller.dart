@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -8,7 +9,14 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 class PaymentController extends GetxController{
-  double balance =100;
+  double balance =0;
+
+  PaymentController(){
+    FirebaseFirestore.instance.collection("Account").doc("0").snapshots().listen((value) {
+      balance = double.parse(value.data()!['balance'].toString());
+      update();
+    });
+  }
   Future<bool?> payWithApplePay(double amount) async {
     double totalPrice = amount;
     try {
@@ -41,9 +49,10 @@ class PaymentController extends GetxController{
     return false;
   }
   addBalance(amount){
-    balance=amount+balance;
+    // balance=amount+balance;
+    FirebaseFirestore.instance.collection("Account").doc("0").update({"balance":(amount+balance).toString()});
     Get.back();
-    update();
+    // update();
   }
   Future<Map<String, dynamic>?> _getPaymentIntent(
       Map<String, dynamic> data) async {
@@ -66,6 +75,7 @@ class PaymentController extends GetxController{
 
   Future<bool> handleApplePayPress(context,double selected) async {
     try {
+
       //if (Stripe.instance.isApplePaySupported.value) {
         return await payWithApplePay(selected) ?? false;
         // if (paymentSuccessful) {

@@ -3,6 +3,7 @@ import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:another_stepper/dto/stepper_data.dart';
 import 'package:another_stepper/widgets/another_stepper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:duration/duration.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -51,8 +52,8 @@ class _TaxiHomeState extends State<TaxiHome> {
   MapType mapType = MapType.normal;
 LatLng? latLng;
 bool isSqrLoading = false;
-
-
+String dateTimeString ='';
+double totalPay = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +163,7 @@ bool isSqrLoading = false;
                   // },
                   onTap: (argument) async {
                     if(ordersTripModel==null){
-                      homeViewModel.setMarker(argument, "location_pin", "marker", "0", size: 50);
+                      homeViewModel.setMarker(argument, "location_pin", "marker", "0", size: 100);
                       PlaceModel places = await homeViewModel.getLocationName(argument);
                       if (places.places!.isEmpty) {
                         homeViewModel.markers.removeWhere((key,value) => value.position == argument);
@@ -416,32 +417,44 @@ bool isSqrLoading = false;
                                   ),
                                   Column(
                                     children: [
-                                      Center(
-                                          child: Text(
-                                            "01:00",
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(fontWeight: FontWeight.w300, fontSize: 20),
-                                          )),
-                                      SizedBox(
-                                        height: MediaQuery.sizeOf(context).width / 5,
-                                        child:    Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Container(
-                                              padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
-                                              decoration: BoxDecoration(color: Colors.grey.shade300,borderRadius:BorderRadius.circular(15) ),
-                                              child: AnimatedFlipCounter(
-                                                thousandSeparator: ",",
-                                                decimalSeparator: ".",
+                                      Center(child: StatefulBuilder(builder: (timecontext, timeState) {
+                                        dateTimeString = printDuration(ordersTripModel!.date!.difference(DateTime.now()).abs()).toString();
+                                        Future.delayed(Duration(seconds: 1)).then((value) {
+                                          if (timecontext.mounted) {
+                                            timeState(() {});
+                                          }
+                                        });
+                                        return Text( dateTimeString);
+                                      })),
+                                      Center(child: StatefulBuilder(builder: (timecontext, timeState) {
+                                        totalPay = ordersTripModel!.date!.difference(DateTime.now()).abs().inSeconds.toDouble() * 0.25;
+                                        Future.delayed(Duration(seconds: 3)).then((value) {
+                                          if (timecontext.mounted) {
+                                            timeState(() {});
+                                          }
+                                        });
+                                        return SizedBox(
+                                          height: MediaQuery.sizeOf(context).width / 5,
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                                                decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(15)),
+                                                child: AnimatedFlipCounter(
+                                                  thousandSeparator: ",",
+                                                  decimalSeparator: ".",
                                                   fractionDigits: 2,
-                                                duration: Duration(milliseconds: 500),
-                                                value:ordersTripModel.total??0,
-                                                suffix: " AED",
-                                                textStyle: TextStyle(fontSize: 40),
+                                                  duration: Duration(milliseconds: 500),
+                                                  value: totalPay,
+                                                  suffix: " AED",
+                                                  textStyle: TextStyle(fontSize: 40),
+                                                ),
                                               ),
-                                            ),
-                                          ],
-                                        ),),
+                                            ],
+                                          ),
+                                        );
+                                      })),
                                     ],
                                   ),
 
@@ -470,34 +483,42 @@ bool isSqrLoading = false;
                                         children: [
                                           Row(
                                             children: [
-                                              Text("Total Distancce"),
+                                              Text("Total Time"),
                                               Spacer(),
-                                              Text("3 KM"),
+                                              Text( dateTimeString),
                                             ],
                                           ),
-
-                                          Container(height: 2,color: Colors.grey.shade300,),
+                                          Container(
+                                            height: 2,
+                                            color: Colors.grey.shade300,
+                                          ),
                                           Row(
                                             children: [
                                               Text("subtotal"),
                                               Spacer(),
-                                              Text(ordersTripModel.total!.toString()+" AED"),
+                                              Text(totalPay.toString() + " AED"),
                                             ],
                                           ),
-                                          Container(height: 2,color: Colors.grey.shade300,),
+                                          Container(
+                                            height: 2,
+                                            color: Colors.grey.shade300,
+                                          ),
                                           Row(
                                             children: [
                                               Text("Add 5% VAT"),
                                               Spacer(),
-                                              Text((ordersTripModel.total!*0.05).toStringAsFixed(2)+" AED"),
+                                              Text((totalPay * 0.05).toStringAsFixed(2) + " AED"),
                                             ],
                                           ),
-                                          Container(height: 2,color: Colors.grey.shade300,),
+                                          Container(
+                                            height: 2,
+                                            color: Colors.grey.shade300,
+                                          ),
                                           Row(
                                             children: [
                                               Text("Total"),
                                               Spacer(),
-                                              Text((ordersTripModel.total!+(ordersTripModel.total!*0.05)).toStringAsFixed(2)+" AED"),
+                                              Text((totalPay + (totalPay * 0.05)).toStringAsFixed(2) + " AED"),
                                             ],
                                           ),
                                         ],
@@ -509,15 +530,15 @@ bool isSqrLoading = false;
                                       InkWell(
                                         onTap:() async {
                                           if(!isSqrLoading){
+                                            var totalDis = (totalPay + (totalPay * 0.05));
                                             isSqrLoading = true;
                                             setstate((){});
                                             await Future.delayed(Duration(milliseconds: 1500));
                                             isSqrLoading = false;
                                             PaymentController paymentController  = Get.find<PaymentController>();
-                                          double _= paymentController.balance-ordersTripModel!.total!;
+                                           double _= paymentController.balance-totalDis;
                                           if(_>0){
-                                            paymentController.balance = paymentController.balance-ordersTripModel!.total!;
-                                            paymentController.update();
+                                            FirebaseFirestore.instance.collection("Account").doc("0").update({"balance":_.toString()});
                                             FirebaseFirestore.instance.collection("Orders").doc("0").delete();
                                           }else{
                                             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -550,8 +571,9 @@ bool isSqrLoading = false;
                                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
                                           child: ApplePayButton(
                                             onPressed: () async {
+                                              double totalDis = double.parse((totalPay + (totalPay * 0.05)).toStringAsFixed(2));
                                               PaymentController paymentController  = Get.find<PaymentController>();
-                                             bool _ = await paymentController.handleApplePayPress(context,ordersTripModel!.total!);
+                                             bool _ = await paymentController.handleApplePayPress(context,totalDis);
                                              if(_){
                                                FirebaseFirestore.instance.collection("Orders").doc("0").delete();
                                              }

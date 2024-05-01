@@ -73,7 +73,7 @@ class CardView extends StatelessWidget {
                                     blurRadius: 9,
                                   ),
                                 SizedBox(width: 30,),
-                                  Text("Your Balance: ${controller.balance} AED",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 22),),
+                                  Text("Your Balance: ${controller.balance.toStringAsFixed(2)} AED",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
                                 ],
                               )),
                             ),

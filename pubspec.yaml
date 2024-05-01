@@ -69,6 +69,7 @@ dependencies:
   flutter_compass:
   hive_flutter:
   geolocator:
+  duration:
 
 dev_dependencies:
   flutter_test:

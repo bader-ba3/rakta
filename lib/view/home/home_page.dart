@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> {
                 color: Colors.white,
                 // border: Border.all(color: Colors.black),
                 widget: Image.asset("assets/bike.png",width: 35,height: 35)),
-                CircularMenuItem(
+            CircularMenuItem(
                     color: Colors.white,
                     // border: Border.all(color: Colors.black),
                     widget: Image.asset("assets/boat.png",width: 35,height: 35), onTap: () {
@@ -104,8 +104,10 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
             onTap: (index) {
-              pageController.jumpToPage(index);
-              controller.updateIndex(index);
+              if(index !=2){
+                pageController.jumpToPage(index);
+                controller.updateIndex(index);
+              }
             },
           ),
 

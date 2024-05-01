@@ -13,12 +13,8 @@ class GetBinding extends Bindings {
     Get.put(MainViewModel());
     Get.put(TripViewModel());
     Get.put(UserViewModel());
-    // Get.lazyPut(() => HomeViewModel(),fenix: true);
-    // Get.lazyPut(() => RiderHomeViewModel(),fenix: true);
-    // Get.lazyPut(() => TripHistoryViewModel(),fenix: true);
     Get.put(PlaceViewModel(),);
     Get.put(PaymentController(),);
     Get.put(HomeViewModel());
-
   }
 }
