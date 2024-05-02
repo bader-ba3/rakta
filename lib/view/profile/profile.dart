@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:rakta/utils/hive.dart';
 import 'package:rakta/view/profile/personal_info.dart';
 
+import '../onboarding/onboarding.dart';
+
 class ProfileView extends StatelessWidget {
   const ProfileView({super.key});
 
@@ -65,15 +67,21 @@ class ProfileView extends StatelessWidget {
                   item("Language","assets/Document.png"),
                   item("Help center","assets/Info square.png"),
                   item("Privacy policy","assets/Lock.png"),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 15,horizontal: 22.0),
-                    child: Row(
-                      children: [
-                        SizedBox(width: 10,),
-                        Image.asset("assets/Home.png",color: Colors.red,width: 30,),
-                        SizedBox(width: 15,),
-                        Text("Logout",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold,color: Colors.red),),
-                      ],
+                  InkWell(
+                    onTap: (){
+                      HiveDataBase.deleteUserData();
+                      Get.offAll(()=>OnBoardingView());
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 15,horizontal: 22.0),
+                      child: Row(
+                        children: [
+                          SizedBox(width: 10,),
+                          Image.asset("assets/Home.png",color: Colors.red,width: 30,),
+                          SizedBox(width: 15,),
+                          Text("Logout",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold,color: Colors.red),),
+                        ],
+                      ),
                     ),
                   )
                 ],

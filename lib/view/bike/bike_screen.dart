@@ -1,9 +1,16 @@
 import 'dart:math';
 
+import 'package:animated_flip_counter/animated_flip_counter.dart';
+import 'package:duration/duration.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:get/get.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../Services/services.dart';
+import '../../controller/payment_controller.dart';
+import '../../utils/var.dart';
 
 class BikeScreen extends StatefulWidget {
   const BikeScreen({super.key});
@@ -107,69 +114,286 @@ class _BikeScreenState extends State<BikeScreen> {
     LatLng(25.778608, 55.939098),
   ];
   Set<Marker> markers={};
-  void onTapMarker(type){
-    showModalBottomSheet(context: context, builder: (context) => Container(
-      height: 370,
-      color: Colors.white,
-      child: Column(
-        children: [
-          SizedBox(height: 5,),
-          Center(child: Container(width: 100,height: 5,decoration: BoxDecoration(color: Colors.grey , borderRadius: BorderRadius.circular(15)),)),
-          SizedBox(height: 5,),
-          Row(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      SizedBox(width: 20,),
-                      Icon(Icons.qr_code_scanner),
-                      SizedBox(width: 10,),
-                      Text(Random().nextInt(999999).toString(),style: TextStyle(fontWeight: FontWeight.bold,fontSize: 22),),
-                      SizedBox(width: 20,),
-                      Icon(Icons.notifications_active_outlined),
-                      SizedBox(width: 10,),
-                      Text("Ring",style: TextStyle(fontSize: 20),),
+  String rideStatus = Const.rideStatusNotStart;
 
-                    ],
+  bool isSqrLoading = false;
+  void onTapMarker(type){
+    String dateTimeString = '';
+    DateTime? startDate;
+   double totalPay=0;
+    showModalBottomSheet(
+      context: context,
+      isDismissible:rideStatus!=Const.rideStatusNotStart ,
+      builder: (context) => StatefulBuilder(
+      builder: (context,setstate) {
+        return PopScope(
+          canPop: rideStatus!=Const.rideStatusNotStart ,
+          child: Container(
+            height: rideStatus == Const.rideStatusStart ? 250:370,
+            color: Colors.white,
+            child: Column(
+              children: [
+                SizedBox(height: 5,),
+                Center(child: Container(width: 100,height: 5,decoration: BoxDecoration(color: Colors.grey , borderRadius: BorderRadius.circular(15)),)),
+                SizedBox(height: 5,),
+                if(rideStatus == Const.rideStatusNotStart)
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    SizedBox(width: 20,),
+                                    Icon(Icons.qr_code_scanner),
+                                    SizedBox(width: 10,),
+                                    Text(Random().nextInt(999999).toString(),style: TextStyle(fontWeight: FontWeight.bold,fontSize: 22),),
+                                    SizedBox(width: 20,),
+                                    Icon(Icons.notifications_active_outlined),
+                                    SizedBox(width: 10,),
+                                    Text("Ring",style: TextStyle(fontSize: 20),),
+
+                                  ],
+                                ),
+                                SizedBox(height: 20,),
+                                Row(
+                                  children: [
+                                    SizedBox(width: 20,),
+                                    Text("Range: "),
+                                    Text("24 KM",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),),
+                                    SizedBox(width: 5,),
+                                    Icon(Icons.battery_3_bar_outlined),
+                                  ],
+                                )
+                              ],
+                            ),
+                            Spacer(),
+                            Image.asset(type =="scooter"?"assets/scooter_big.png":"assets/bike_big.png",height: 150,fit: BoxFit.fill,),
+                          ],
+                        ),
+                        SizedBox(height: 20,),
+                        Container(
+                          height: 50,
+                          width: MediaQuery.sizeOf(context).width/1.2,
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),border: Border.all(width: 2)),
+                          child: Center(child: Text("Free Reservation",style: TextStyle(fontWeight: FontWeight.bold),)),
+                        ),
+                        SizedBox(height: 20,),
+                        InkWell(
+                          onTap: (){
+                            rideStatus = Const.rideStatusStart;
+                            startDate = DateTime.now();
+                            setstate((){});
+                          },
+                          child: Container(
+                            height: 50,
+                            width: MediaQuery.sizeOf(context).width/1.2,
+                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),border: Border.all(width: 2),color: Colors.blueAccent),
+                            child: Center(child: Text("Start Trip Now",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),)),
+                          ),
+                        ),
+                        SizedBox(height: 10,),
+                        Center(
+                          child: Text("opening for 3 AED and 1 AED per minutes"),
+                        )
+                      ],
+                    ),
                   ),
-                  SizedBox(height: 20,),
-                  Row(
+                if(rideStatus == Const.rideStatusStart)
+                  Expanded(child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      SizedBox(width: 20,),
-                      Text("Range: "),
-                      Text("24 KM",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),),
-                      SizedBox(width: 5,),
-                      Icon(Icons.battery_3_bar_outlined),
+                      Column(
+                        children: [
+                          Center(child: StatefulBuilder(builder: (timecontext, timeState) {
+                            dateTimeString = printDuration(startDate!.difference(DateTime.now()).abs()).toString();
+                            Future.delayed(Duration(seconds: 1)).then((value) {
+                              if (timecontext.mounted) {
+                                timeState(() {});
+                              }
+                            });
+                            return Text( dateTimeString);
+                          })),
+                          Center(child: StatefulBuilder(builder: (timecontext, timeState) {
+                            totalPay = startDate!.difference(DateTime.now()).abs().inSeconds.toDouble() * 0.25;
+                            Future.delayed(Duration(seconds: 3)).then((value) {
+                              if (timecontext.mounted) {
+                                timeState(() {});
+                              }
+                            });
+                            return SizedBox(
+                              height: MediaQuery.sizeOf(context).width / 5,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                                    decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(15)),
+                                    child: AnimatedFlipCounter(
+                                      thousandSeparator: ",",
+                                      decimalSeparator: ".",
+                                      fractionDigits: 2,
+                                      duration: Duration(milliseconds: 500),
+                                      value: totalPay,
+                                      suffix: " AED",
+                                      textStyle: TextStyle(fontSize: 40),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          })),
+                        ],
+                      ),
+                      SizedBox(height: 10,),
+                      InkWell(
+                        onTap: (){
+                          rideStatus = Const.rideStatusPaying;
+                          setstate((){});
+                        },
+                        child: Container(
+                          height: 50,
+                          width: MediaQuery.sizeOf(context).width/1.2,
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),border: Border.all(width: 2),color: Colors.blueAccent),
+                          child: Center(child: Text("End Trip",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),)),
+                        ),
+                      ),
+                      SizedBox(height: 25,),
                     ],
-                  )
-                ],
-              ),
-              Spacer(),
-              Image.asset(type =="scooter"?"assets/scooter_big.png":"assets/bike_big.png",height: 150,fit: BoxFit.fill,),
-            ],
+                  )),
+
+                if(rideStatus == Const.rideStatusPaying)
+                  Expanded(child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.sizeOf(context).width/2.2,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Row(
+                                children: [
+                                  Text("Total Time"),
+                                  Spacer(),
+                                  Text( dateTimeString),
+                                ],
+                              ),
+                              Container(
+                                height: 2,
+                                color: Colors.grey.shade300,
+                              ),
+                              Row(
+                                children: [
+                                  Text("subtotal"),
+                                  Spacer(),
+                                  Text(totalPay.toString() + " AED"),
+                                ],
+                              ),
+                              Container(
+                                height: 2,
+                                color: Colors.grey.shade300,
+                              ),
+                              Row(
+                                children: [
+                                  Text("Add 5% VAT"),
+                                  Spacer(),
+                                  Text((totalPay * 0.05).toStringAsFixed(2) + " AED"),
+                                ],
+                              ),
+                              Container(
+                                height: 2,
+                                color: Colors.grey.shade300,
+                              ),
+                              Row(
+                                children: [
+                                  Text("Total"),
+                                  Spacer(),
+                                  Text((totalPay + (totalPay * 0.05)).toStringAsFixed(2) + " AED"),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Column(
+                        children: [
+                          InkWell(
+                            onTap:() async {
+                              if(!isSqrLoading){
+                                var totalDis = (totalPay + (totalPay * 0.05));
+                                isSqrLoading = true;
+                                setstate((){});
+                                await Future.delayed(Duration(milliseconds: 1500));
+                                isSqrLoading = false;
+                                PaymentController paymentController  = Get.find<PaymentController>();
+                                double _= paymentController.balance-totalDis;
+                                if(_>0){
+                                 rideStatus = Const.rideStatusNotStart;
+                                 Get.back();
+                                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                   content: Text("Thank You"),
+                                 ));
+                                }else{
+                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                    content: Text("you don't have enough balance"),
+                                  ));
+                                }
+                                setstate(() {
+
+                                });
+
+                              }
+                            },
+                            child: Center(
+                              child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                  child: Container(
+                                    height: 50,
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(color: Colors.blueAccent.shade700,borderRadius: BorderRadius.circular(8)),
+                                    child: Center(child: isSqrLoading
+                                        ?CircularProgressIndicator(color: Colors.white,)
+                                        :Text("Saqr Card",style: TextStyle(color: Colors.white,fontSize: 22,fontWeight: FontWeight.bold),)),
+                                  )
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 10,),
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                              child: ApplePayButton(
+                                  onPressed: () async {
+                                    double totalDis = double.parse((totalPay + (totalPay * 0.05)).toStringAsFixed(2));
+                                    PaymentController paymentController  = Get.find<PaymentController>();
+                                    bool _ = await paymentController.handleApplePayPress(context,totalDis);
+                                    if(_){
+                                      rideStatus = Const.rideStatusNotStart;
+                                      Get.back();
+                                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                        content: Text("Thank You"),
+                                      ));
+                                    }
+                                  }
+                              ),
+                            ),
+                          ),
+
+                        ],
+                      ),
+                    ],
+                  )),
+
+              ],
+            ),
           ),
-          SizedBox(height: 20,),
-          Container(
-            height: 50,
-            width: MediaQuery.sizeOf(context).width/1.2,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),border: Border.all(width: 2)),
-            child: Center(child: Text("Free Reservation",style: TextStyle(fontWeight: FontWeight.bold),)),
-          ),
-          SizedBox(height: 20,),
-          Container(
-            height: 50,
-            width: MediaQuery.sizeOf(context).width/1.2,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),border: Border.all(width: 2),color: Colors.blueAccent),
-            child: Center(child: Text("Start Trip Now",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),)),
-          ),
-          SizedBox(height: 10,),
-          Center(
-            child: Text("opening for 3 AED and 1 AED per minutes"),
-          )
-        ],
-      ),
+        );
+      }
     ),);
   }
   @override

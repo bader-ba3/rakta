@@ -19,6 +19,7 @@ class PaymentController extends GetxController{
   }
   Future<bool?> payWithApplePay(double amount) async {
     double totalPrice = amount;
+    print(amount);
     try {
       await Stripe.instance.presentApplePay(
         params: ApplePayPresentParams(
@@ -37,12 +38,18 @@ class PaymentController extends GetxController{
         'currency': 'AED',
         'payment_method_types[]': 'card',
       });
+      print(paymentIntentResponse);
       final clientSecret = paymentIntentResponse!['client_secret'];
+
+      print(clientSecret);
       await Stripe.instance.confirmApplePayPayment(clientSecret);
       return true;
     } on PlatformException catch (exception) {
       log(exception.message ?? 'Something went wrong');
+      log(exception.code ?? 'Something went wrong');
+      log(exception.details ?? 'Something went wrong');
     } catch (exception) {
+      log(exception.toString());
       log(exception.toString());
       return false;
     }

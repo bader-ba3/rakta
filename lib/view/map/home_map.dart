@@ -37,7 +37,7 @@ class _HomeMapPageState extends State<HomeMapPage> {
 
   TextEditingController locationController = TextEditingController();
   MapType mapType = MapType.normal;
-  
+  bool showMarker = true;
   List<LatLng> ridesPloy =[
     LatLng( 25.7912747,-304.0482551),
         LatLng( 25.7912619,-304.0480478),
@@ -117,36 +117,11 @@ class _HomeMapPageState extends State<HomeMapPage> {
   @override
   void initState() {
     super.initState();
-    if (userTrip.tpRider == null) {
-     /* Future.delayed(const Duration(milliseconds: 50), () {
-        bottomSheet = showBottomSheet(
-          shape: const RoundedRectangleBorder(),
-          context: context,
-          builder: (_) {
-            return const MyBottomSheet();
-          },
-        );
-      });*/
-    } else {
-/*      Future.delayed(const Duration(milliseconds: 50), () {
-        bottomSheet = showBottomSheet(
-          shape: const RoundedRectangleBorder(),
-          context: context,
-          builder: (_) {
-            return RequestBottomSheet(
-              userTrip: userTrip,
-            );
-          },
-        );
-      });*/
-    }
+
   }
 
   @override
   void dispose() async {
-    Future.delayed(const Duration(milliseconds: 50), () {
-      bottomSheet?.close();
-    });
     super.dispose();
   }
 
@@ -170,46 +145,31 @@ class _HomeMapPageState extends State<HomeMapPage> {
                 Polygon(polygonId: PolygonId("1"),
                 points: ridesPloy,fillColor: Colors.green.withOpacity(0.2),strokeWidth: 2)
               },
+              onCameraMove: (_){
+                if(_.zoom>13.5){
+                  showMarker = true;
+                }else{
+                  showMarker = false;
+                }
+                setState(() {});
+              },
               onMapCreated: (controller) async {
                 String mapStyle = await rootBundle.loadString('assets/map_style.json');
                 controller.setMapStyle(mapStyle);
                 homeViewModel.controller = Completer();
                 homeViewModel.controller.complete(controller);
-                homeViewModel.setMarker(const LatLng(25.784937939271234, 55.96950907868376),
-                    "bus_top", "bus1","10",size: 60);
-                homeViewModel.setMarker(const LatLng(25.77788539214604, 55.93905446659033),
-                    "ferry", "ferry1","40",size: 60);
+                homeViewModel.setMarker(const LatLng(25.784937939271234, 55.96950907868376), "bus_top", "bus1","10",size: 60);
+                homeViewModel.setMarker(const LatLng(25.77788539214604, 55.93905446659033), "ferry", "ferry1","40",size: 60);
                 // homeViewModel.setMarker(const LatLng(25.779292009370142, 55.943131344042804),
-                homeViewModel.setMarker(const LatLng(25.789401, 55.952052),
-                    "ferry", "ferry2","-100",size: 60);
-
-                homeViewModel.setMarker(const LatLng(25.786473, 55.947056),
-                    "images/scoter", "scoter","0",size: 100);
-
-                homeViewModel.setMarker(const LatLng(25.789815, 55.950899),
-                    "images/scoter", "scoter2","0",size: 100);
-
-                homeViewModel.setMarker(const  LatLng(25.786453, 55.947556),
-                    "images/bike", "bike","0",size: 100,);
-                homeViewModel.setMarker(const   LatLng(25.783603, 55.944155),
-                "images/bike", "bike2","0",size: 100,);
-
+                homeViewModel.setMarker(const LatLng(25.789401, 55.952052), "ferry", "ferry2","-100",size: 60);
+                homeViewModel.setMarker(const LatLng(25.786473, 55.947056), "images/scoter", "scoter","0",size: 100);
+                homeViewModel.setMarker(const LatLng(25.789815, 55.950899), "images/scoter", "scoter2","0",size: 100);
+                homeViewModel.setMarker(const  LatLng(25.786453, 55.947556), "images/bike", "bike","0",size: 100,);
+                homeViewModel.setMarker(const   LatLng(25.783603, 55.944155), "images/bike", "bike2","0",size: 100,);
                 homeViewModel.getDrawPolylineGreen([]);
                 homeViewModel.getDrawPolylineRedLine([]);
                 homeViewModel.getDrawPolylineBlue([]);
                 homeViewModel.getDrawPolylinePurple([]);
-            /*    Utils().getMyLocation().then((value) {
-                  print(value);
-                  homeViewModel.setMarker(
-                      value, "location_arrow_icon", "myId","0");
-                  if (userTrip.tpRider == null) {
-                    homeViewModel.animateCamera(value);
-                  }
-                  homeViewModel
-                      .getLocationName(value)
-                      .then((value) => Variables.currentLocation = value);
-                  Variables.currentLoc = value;
-                });*/
                 if (userTrip.tpRider == null) {
                   homeViewModel.setRiderMarker();
                 } else {
@@ -224,62 +184,7 @@ class _HomeMapPageState extends State<HomeMapPage> {
                   homeViewModel.getDrawPolylineGreen(userTrip.tpPolyLine!);
                 }
               },
-              // onTap: (location) {
-              //   if (userTrip.tpRider == null) {
-              //     homeViewModel.getLocationName(location).then((value) {
-              //       if (value.places?.length != 0) {
-              //         homeViewModel.setMarker(
-              //             location, "location_pin", "anymore","0");
-              //         locationController.text = value
-              //             .places!.first.displayName!.text!
-              //             .toString();
-              //         showBottomSheet(
-              //           shape: const RoundedRectangleBorder(),
-              //           context: context,
-              //           builder: (_) {
-              //             return GestureDetector(
-              //                 onTap: () async {
-              //                   String tripId = generateId("trip");
-              //                   Get.back();
-              //                   await homeViewModel.addTip(TripModel(
-              //                     tpDest: LocationModel(
-              //                       locAdd1: value
-              //                           .places!.first.formattedAddress!,
-              //                       locName: value
-              //                           .places!.first.displayName!.text!,
-              //                       location: location,
-              //                     ),
-              //                     tpId: tripId,
-              //                     tpSrc: LocationModel(
-              //                         locName: Variables
-              //                             .currentLocation
-              //                             ?.places
-              //                             ?.first
-              //                             .displayName
-              //                             ?.text,
-              //                         locAdd1: Variables
-              //                             .currentLocation
-              //                             ?.places
-              //                             ?.first
-              //                             .formattedAddress,
-              //                         location: Variables.currentLoc),
-              //                     tpStatus: TripStatus.waiting,
-              //                     tpUser: Variables.currentUser.userId,
-              //                   ));
-              //                   //TODO:
-              //                   homeViewModel.drawPolyline(
-              //                       Variables.currentLoc!,
-              //                       location,
-              //                       tripId);
-              //                 },
-              //                 child: const ConfirmBottomSheet());
-              //           },
-              //         );
-              //       }
-              //     });
-              //   }
-              // },
-              markers: homeViewModel.markers.values.toSet(),
+              markers:showMarker? homeViewModel.markers.values.toSet():{},
               polylines: homeViewModel.polyLines,
             ),
             Positioned(
@@ -296,29 +201,47 @@ class _HomeMapPageState extends State<HomeMapPage> {
                       hint: "Choose location",
                       controller: locationController,
                     ))),
-            Positioned(
-                top: Get.height * 1 / 5,
-                right: 25,
-                child:  GestureDetector(
-                    onTap: () {
-                      if (mapType == MapType.normal) {
-                        mapType = MapType.hybrid;
-                      } else {
-                        mapType = MapType.normal;
-                      }
-                      setState(() {});
-                    },
-                    child: Container(
-                        height: 40,
-                        width: 40,
-                        decoration: const BoxDecoration(
-                            shape: BoxShape.circle, color: Colors.white),
-                        child: Icon(
-                          mapType == MapType.normal
-                              ? CupertinoIcons.building_2_fill
-                              : CupertinoIcons.arrow_counterclockwise,
-                          color: primary,
-                        )))),
+            Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                  child: Column(
+                    children: [
+                      SizedBox(height:100,),
+                      GestureDetector(
+                          onTap: () {
+                            if (mapType == MapType.normal) {
+                              mapType = MapType.hybrid;
+                            } else {
+                              mapType = MapType.normal;
+                            }
+                            setState(() {});
+                          },
+                          child: Container(
+                              height: 40,
+                              width: 40,
+                              decoration:  BoxDecoration(shape: BoxShape.circle, color: Colors.grey.shade300),
+                              child: Icon(
+                                mapType == MapType.normal ? CupertinoIcons.building_2_fill : CupertinoIcons.arrow_counterclockwise,
+                                color: Colors.amber.shade700,
+                              ))),
+                      SizedBox(height: 20,),
+                      GestureDetector(
+                          onTap: () {
+                            LatLng userLatLng = LatLng(homeViewModel.userPosition!.latitude, homeViewModel.userPosition!.longitude);
+                            homeViewModel.animateCamera(userLatLng);
+                          },
+                          child: Container(
+                              height: 40,
+                              width: 40,
+                              decoration:  BoxDecoration(shape: BoxShape.circle, color: Colors.grey.shade300),
+                              child: Icon(
+                                CupertinoIcons.location_fill,
+                                color: Colors.amber.shade700,
+                              ))),
+                    ],
+                  ),
+                )),
             // if(requestRide)
             AnimatedCrossFade(
               secondChild: const SizedBox(),

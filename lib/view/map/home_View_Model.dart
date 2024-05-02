@@ -21,6 +21,7 @@ import '../../controller/user_view_model.dart';
 
 class HomeViewModel extends GetxController {
   Completer<GoogleMapController> controller = Completer();
+  Completer<GoogleMapController> taxiController = Completer();
   Map<MarkerId, Marker> markers = {};
 
   UserViewModel userViewModel = Get.find<UserViewModel>();
@@ -85,6 +86,18 @@ String fromAddress='';
 
   Future<void> animateCamera(LatLng location) async {
     final GoogleMapController controller = await this.controller.future;
+    CameraPosition cameraPosition = CameraPosition(
+      bearing: 0,
+
+      target: location,
+      zoom: 17.00,
+    );
+    // print(
+    //     "animating camera to (lat: ${location.latitude}, long: ${location.longitude})");
+    controller.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+  }
+  Future<void> animateCameraTaxi(LatLng location) async {
+    final GoogleMapController controller = await taxiController.future;
     CameraPosition cameraPosition = CameraPosition(
       bearing: 0,
 

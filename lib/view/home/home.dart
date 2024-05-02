@@ -5,11 +5,17 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_glow/flutter_glow.dart';
+import 'package:get/get.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:paperfold/paperfold.dart';
+import 'package:rakta/controller/main_view_model.dart';
 import 'package:rakta/utils/hive.dart';
+import 'package:rakta/view/card/payment.dart';
 import 'package:rakta/view/home/news_details.dart';
 import 'package:rakta/view/home/widget/hero_dialog_route.dart';
 import 'package:page_flip/page_flip.dart';
+import '../bus/bus.dart';
+import '../bus/search_page_bus.dart';
 import 'widget/nfc.dart';
 
 class Home extends StatelessWidget {
@@ -112,7 +118,7 @@ class Home extends StatelessWidget {
                               ),
                               Text(
                                 "Hello "+HiveDataBase.getUserData().name,
-                                style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold),
+                                style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
                               ),
                               Spacer(),
                               // Container(
@@ -173,20 +179,6 @@ class Home extends StatelessWidget {
                             SizedBox(
                               width: 10,
                             ),
-                            // Stack(
-                            //   alignment: Alignment.center,
-                            //   children: [
-                            //     GlowIcon(
-                            //       size: 40,
-                            //       Icons.circle_outlined,
-                            //       color: Colors.black,
-                            //     ),
-                            //     GlowIcon(
-                            //       Icons.add,
-                            //       color: Colors.amber.shade800,
-                            //     ),
-                            //   ],
-                            // ),
                             GlowContainer(
                           height: 35,
                           width: 35,
@@ -415,31 +407,48 @@ class Home extends StatelessWidget {
 
   Widget boxWidget(context, index) {
     List favItems = ["My Card","Book Bus","Profile","Add Balance"];
+    List onTap = [
+      (){
+      MainViewModel mainController = Get.find<MainViewModel>();
+      mainController.pageController.jumpToPage(3);
+      mainController.updateIndex(3);
+      },
+      (){Get.to(()=>SearchScreenBus());},
+      (){
+        MainViewModel mainController = Get.find<MainViewModel>();
+        mainController.pageController.jumpToPage(4);
+        mainController.updateIndex(4);
+      },
+      (){Get.to(()=>PaymentScreen());},
+    ];
     List favIconItems = [Icons.rectangle_outlined,Icons.directions_bus_filled,Icons.person,Icons.add];
     return Padding(
       padding: const EdgeInsets.all(2.0),
-      child: Container(
-        height: MediaQuery.sizeOf(context).width / 3.3,
-        width: MediaQuery.sizeOf(context).width / 3.3,
-        decoration: BoxDecoration(color: (a[4] as Color), borderRadius: BorderRadius.circular(15), border: Border.all(color: Colors.black)),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            CircleAvatar(
-              radius: 25,
-              backgroundColor: Colors.white60,
-              child: Center(
-                  child: Icon(
-                    favIconItems[index],
-                color: Colors.white,
-                size: 40,
-              )),
-            ),
-            Text(
-              favItems[index],
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
-            )
-          ],
+      child: InkWell(
+        onTap: onTap[index],
+        child: Container(
+          height: MediaQuery.sizeOf(context).width / 3.3,
+          width: MediaQuery.sizeOf(context).width / 3.3,
+          decoration: BoxDecoration(color: (a[4] as Color), borderRadius: BorderRadius.circular(15), border: Border.all(color: Colors.black)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              CircleAvatar(
+                radius: 25,
+                backgroundColor: Colors.white60,
+                child: Center(
+                    child: Icon(
+                      favIconItems[index],
+                  color: Colors.white,
+                  size: 40,
+                )),
+              ),
+              Text(
+                favItems[index],
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
+              )
+            ],
+          ),
         ),
       ),
     );

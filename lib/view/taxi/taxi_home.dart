@@ -22,12 +22,9 @@ import 'package:slider_button/slider_button.dart';
 import '../../controller/trip_view_model.dart';
 import '../../model/PlaceModel.dart';
 import '../../model/trip_model.dart';
-import '../../utils/app_style.dart';
 import '../../utils/hive.dart';
 import '../../utils/var.dart';
 import '../map/home_View_Model.dart';
-import '../widgets/animation_circle.dart';
-import '../widgets/location_text_filed.dart';
 
 class TaxiHome extends StatefulWidget {
   const TaxiHome({super.key});
@@ -38,7 +35,7 @@ class TaxiHome extends StatefulWidget {
 
 class _TaxiHomeState extends State<TaxiHome> {
   var initialCameraPosition = const CameraPosition(
-    target: Const.locationCompany,
+    target:LatLng(0, 0),
     zoom: 17,
   );
 
@@ -48,13 +45,24 @@ class _TaxiHomeState extends State<TaxiHome> {
 
   TextEditingController locationController = TextEditingController();
   TextEditingController toController = TextEditingController();
+  TextEditingController fromController = TextEditingController();
 
   MapType mapType = MapType.normal;
-LatLng? latLng;
+LatLng? fromLatLng;
+LatLng? toLatLng;
 bool isSqrLoading = false;
 String dateTimeString ='';
 double totalPay = 0;
-
+bool showMarker = true;
+  bool isSelectFrom = true;
+  
+  @override
+  void dispose() {
+    HomeViewModel homeViewModel = Get.find<HomeViewModel>();
+    homeViewModel.markers.removeWhere((key,value) => key.value.contains("marker"));
+    super.dispose();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,112 +79,71 @@ double totalPay = 0;
           return GetBuilder<HomeViewModel>(builder: (homeViewModel) {
             return Stack(
               children: [
-                GoogleMap(
-                  myLocationButtonEnabled: false,
-                  compassEnabled: true,
-                  zoomControlsEnabled: false,
-                  myLocationEnabled: true,
-                  initialCameraPosition: initialCameraPosition,
-                  mapType: mapType,
-                  onMapCreated: (controller) async {
-                    String mapStyle = await rootBundle.loadString('assets/map_style.json');
-                    controller.setMapStyle(mapStyle);
-                    homeViewModel.controller = Completer();
-                    LatLng userLatLng = LatLng(homeViewModel.userPosition!.latitude, homeViewModel.userPosition!.longitude);
-                    homeViewModel.animateCamera(userLatLng);
-                    // homeViewModel.setMarker(
-                    //     userLatLng, "location_arrow_icon", "myId","0");
-                    /*    Utils().getMyLocation().then((value) {
-                      print(value);
-
-                      if (userTrip.tpRider == null) {
-                        homeViewModel.animateCamera(value);
-                      }
-                      homeViewModel
-                          .getLocationName(value)
-                          .then((value) => Variables.currentLocation = value);
-                      Variables.currentLoc = value;
-                    });*/
-                    if (userTrip.tpRider == null) {
-                      homeViewModel.setRiderMarker();
-                    } else {
-                      homeViewModel.setMarker(userTrip.tpDest!.location!, "location_pin", "location_pin2", "0");
-                      homeViewModel.setMarker(userTrip.tpLocation!.last.location!, "car_gry", "car_gry", "0");
-                      homeViewModel.animateCamera(userTrip.tpLocation!.last.location!);
-                      homeViewModel.getDrawPolylineGreen(userTrip.tpPolyLine!);
-                    }
-                  },
-                  // onTap: (location) {
-                  //   if (userTrip.tpRider == null) {
-                  //     homeViewModel.getLocationName(location).then((value) {
-                  //       if (value.places?.length != 0) {
-                  //         homeViewModel.setMarker(
-                  //             location, "location_pin", "anymore","0");
-                  //         locationController.text = value
-                  //             .places!.first.displayName!.text!
-                  //             .toString();
-                  //         showBottomSheet(
-                  //           shape: const RoundedRectangleBorder(),
-                  //           context: context,
-                  //           builder: (_) {
-                  //             return GestureDetector(
-                  //                 onTap: () async {
-                  //                   String tripId = generateId("trip");
-                  //                   Get.back();
-                  //                   await homeViewModel.addTip(TripModel(
-                  //                     tpDest: LocationModel(
-                  //                       locAdd1: value
-                  //                           .places!.first.formattedAddress!,
-                  //                       locName: value
-                  //                           .places!.first.displayName!.text!,
-                  //                       location: location,
-                  //                     ),
-                  //                     tpId: tripId,
-                  //                     tpSrc: LocationModel(
-                  //                         locName: Variables
-                  //                             .currentLocation
-                  //                             ?.places
-                  //                             ?.first
-                  //                             .displayName
-                  //                             ?.text,
-                  //                         locAdd1: Variables
-                  //                             .currentLocation
-                  //                             ?.places
-                  //                             ?.first
-                  //                             .formattedAddress,
-                  //                         location: Variables.currentLoc),
-                  //                     tpStatus: TripStatus.waiting,
-                  //                     tpUser: Variables.currentUser.userId,
-                  //                   ));
-                  //                   //TODO:
-                  //                   homeViewModel.drawPolyline(
-                  //                       Variables.currentLoc!,
-                  //                       location,
-                  //                       tripId);
-                  //                 },
-                  //                 child: const ConfirmBottomSheet());
-                  //           },
-                  //         );
-                  //       }
-                  //     });
-                  //   }
-                  // },
-                  onTap: (argument) async {
-                    if(ordersTripModel==null){
-                      homeViewModel.setMarker(argument, "location_pin", "marker", "0", size: 100);
-                      PlaceModel places = await homeViewModel.getLocationName(argument);
-                      if (places.places!.isEmpty) {
-                        homeViewModel.markers.removeWhere((key,value) => value.position == argument);
-                      } else {
-                        print(places.places!.first.displayName!.text);
-                        latLng = argument;
-                        toController.text = places.places!.first.displayName!.text!;
-                      }
-                      setState(() {});
-                    }
-                  },
-                  markers: homeViewModel.markers.values.toSet(),
-                  polylines: homeViewModel.polyLines,
+                StatefulBuilder(
+                  builder: (context,mapState) {
+                    return GoogleMap(
+                      myLocationButtonEnabled: false,
+                      compassEnabled: true,
+                      zoomControlsEnabled: false,
+                      myLocationEnabled: true,
+                      initialCameraPosition: initialCameraPosition,
+                      mapType: mapType,
+                      onCameraMove: (_){
+                        if(_.zoom>13.5){
+                          showMarker = true;
+                        }else{
+                          showMarker = false;
+                        }
+                        mapState(() {});
+                      },
+                      onMapCreated: (controller) async {
+                        String mapStyle = await rootBundle.loadString('assets/map_style.json');
+                        controller.setMapStyle(mapStyle);
+                        homeViewModel.taxiController = Completer();
+                        homeViewModel.taxiController.complete(controller);
+                        LatLng userLatLng = LatLng(homeViewModel.userPosition!.latitude, homeViewModel.userPosition!.longitude);
+                        homeViewModel.animateCameraTaxi(userLatLng);
+                        if (userTrip.tpRider == null) {
+                          homeViewModel.setRiderMarker();
+                        } else {
+                          homeViewModel.setMarker(userTrip.tpDest!.location!, "location_pin", "location_pin2", "0");
+                          homeViewModel.setMarker(userTrip.tpLocation!.last.location!, "car_gry", "car_gry", "0");
+                          homeViewModel.animateCamera(userTrip.tpLocation!.last.location!);
+                          homeViewModel.getDrawPolylineGreen(userTrip.tpPolyLine!);
+                        }
+                      },
+                      onTap: (argument) async {
+                        if(ordersTripModel==null){
+                          if(isSelectFrom){
+                            homeViewModel.setMarker(argument, "location_icon", "marker_from", "0", size: 100);
+                            PlaceModel places = await homeViewModel.getLocationName(argument);
+                            if (places.places!.isEmpty) {
+                              homeViewModel.markers.removeWhere((key,value) => value.position == argument);
+                              fromController.clear();
+                              fromLatLng = null;
+                            } else {
+                              fromLatLng = argument;
+                              fromController.text = places.places!.first.displayName!.text!;
+                            }
+                          }else{
+                            homeViewModel.setMarker(argument, "location_pin", "marker_to", "0", size: 100);
+                            PlaceModel places = await homeViewModel.getLocationName(argument);
+                            if (places.places!.isEmpty) {
+                              homeViewModel.markers.removeWhere((key,value) => value.position == argument);
+                              toLatLng=null;
+                              toController.clear();
+                            } else {
+                              toLatLng = argument;
+                              toController.text = places.places!.first.displayName!.text!;
+                            }
+                          }
+                          setState(() {});
+                        }
+                      },
+                      markers: showMarker?homeViewModel.markers.values.toSet():{},
+                      polylines: homeViewModel.polyLines,
+                    );
+                  }
                 ),
                 Align(
                   alignment: Alignment.bottomCenter,
@@ -241,23 +208,46 @@ double totalPay = 0;
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Container(
-                                            decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(10)),
-                                            width: 275,
-                                            height: 50,
+                                          decoration: BoxDecoration(border: Border.all(color: Colors.black), color: Colors.grey.withOpacity(isSelectFrom?0.2:0),borderRadius: BorderRadius.circular(10)),
+                                          width: 275,
+                                          height: 50,
+                                          child: Center(
                                             child: Padding(
                                               padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                              child: Center(
-                                                  child: Row(
+                                              child: Row(
                                                 children: [
-                                                  Text(homeViewModel.fromAddress),
+                                                  Expanded(
+                                                    child: TextFormField(
+                                                      controller: fromController,
+                                                      decoration: InputDecoration.collapsed(hintText: "From"),
+                                                    ),
+                                                  ),
+                                                  InkWell(
+                                                      onTap: () async {
+                                                        ({LatLng latlng, String name})? _= await  Get.to(PlaceSearchPage());
+                                                        if(_!=null){
+                                                          fromController.text = _.name;
+                                                          fromLatLng = _.latlng;
+                                                        }
+                                                      },
+                                                      child: Icon(Icons.search,color: Colors.amber,)),
+                                                  SizedBox(width: 10,),
+                                                  InkWell(
+                                                      onTap: () async {
+                                                        isSelectFrom = true;
+                                                        setstate(() {});
+                                                      },
+                                                      child: Icon(Icons.location_on,color: Colors.amber,)),
                                                 ],
-                                              )),
-                                            )),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
                                         SizedBox(
                                           height: MediaQuery.sizeOf(context).width / 6,
                                         ),
                                         Container(
-                                          decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(10)),
+                                          decoration: BoxDecoration(border: Border.all(color: Colors.black), color: Colors.grey.withOpacity(isSelectFrom?0:0.2),borderRadius: BorderRadius.circular(10)),
                                           width: 275,
                                           height: 50,
                                           child: Center(
@@ -276,12 +266,17 @@ double totalPay = 0;
                                                         ({LatLng latlng, String name})? _= await  Get.to(PlaceSearchPage());
                                                         if(_!=null){
                                                           toController.text = _.name;
-                                                          latLng = _.latlng;
-                                                          print(_.name);
-                                                          print(_.latlng);
+                                                          toLatLng = _.latlng;
                                                         }
                                                       },
-                                                      child: Icon(Icons.search,color: Colors.amber,))
+                                                      child: Icon(Icons.search,color: Colors.amber,)),
+                                                  SizedBox(width: 10,),
+                                                  InkWell(
+                                                      onTap: () async {
+                                                        isSelectFrom = false;
+                                                        setstate(() {});
+                                                      },
+                                                      child: Icon(Icons.location_on,color: Colors.amber,)),
                                                 ],
                                               ),
                                             ),
@@ -293,15 +288,16 @@ double totalPay = 0;
                                 ),
                                 InkWell(
                                   onTap: () async {
-                                    if(toController.text.isNotEmpty&&latLng!=null&&homeViewModel.userPosition!=null) {
-                                      String fromAddress =  "";
-                                      await  homeViewModel.getLocationName(LatLng(homeViewModel.userPosition!.latitude, homeViewModel.userPosition!.longitude)).then((value) => fromAddress = value.places!.first.displayName!.text!);
+                                    if(toController.text.isNotEmpty&&toLatLng!=null&&fromController.text.isNotEmpty&&fromLatLng!=null) {
+                                      // String fromAddress =  "";
+                                      // await  homeViewModel.getLocationName(LatLng(homeViewModel.userPosition!.latitude, homeViewModel.userPosition!.longitude)).then((value) => fromAddress = value.places!.first.displayName!.text!);
                                       FirebaseFirestore.instance.collection("Orders").doc("0").set({
                                       "userName":HiveDataBase.getUserData().name,
                                       "userNumber":HiveDataBase.getUserData().mobile,
-                                      "fromLatLng":{"lat":homeViewModel.userPosition!.latitude,"lng":homeViewModel.userPosition!.longitude},
-                                      "toLatLng": {"lat":latLng!.latitude,"lng":latLng!.longitude},
-                                      "fromAddress": fromAddress,
+                                      // "fromLatLng":{"lat":homeViewModel.userPosition!.latitude,"lng":homeViewModel.userPosition!.longitude},
+                                      "toLatLng": {"lat":toLatLng!.latitude,"lng":toLatLng!.longitude},
+                                      "fromLatLng": {"lat":fromLatLng!.latitude,"lng":fromLatLng!.longitude},
+                                      "fromAddress": fromController.text,
                                       "toAddress":toController.text,
                                       "status":Const.tripStatusSearchDriver,
                                       "ploy":[],
@@ -598,23 +594,41 @@ double totalPay = 0;
                   alignment: Alignment.topRight,
                     child: Padding(
                       padding: const EdgeInsets.all(20.0),
-                      child: GestureDetector(
-                          onTap: () {
-                            if (mapType == MapType.normal) {
-                              mapType = MapType.hybrid;
-                            } else {
-                              mapType = MapType.normal;
-                            }
-                            setState(() {});
-                          },
-                          child: Container(
-                              height: 40,
-                              width: 40,
-                              decoration:  BoxDecoration(shape: BoxShape.circle, color: Colors.grey.shade300),
-                              child: Icon(
-                                mapType == MapType.normal ? CupertinoIcons.building_2_fill : CupertinoIcons.arrow_counterclockwise,
-                                color: Colors.amber.shade700,
-                              ))),
+                      child: Column(
+                        children: [
+                          GestureDetector(
+                              onTap: () {
+                                if (mapType == MapType.normal) {
+                                  mapType = MapType.hybrid;
+                                } else {
+                                  mapType = MapType.normal;
+                                }
+                                setState(() {});
+                              },
+                              child: Container(
+                                  height: 40,
+                                  width: 40,
+                                  decoration:  BoxDecoration(shape: BoxShape.circle, color: Colors.grey.shade300),
+                                  child: Icon(
+                                    mapType == MapType.normal ? CupertinoIcons.building_2_fill : CupertinoIcons.arrow_counterclockwise,
+                                    color: Colors.amber.shade700,
+                                  ))),
+                          SizedBox(height: 20,),
+                          GestureDetector(
+                              onTap: () {
+                                LatLng userLatLng = LatLng(homeViewModel.userPosition!.latitude, homeViewModel.userPosition!.longitude);
+                                homeViewModel.animateCameraTaxi(userLatLng);
+                                },
+                              child: Container(
+                                  height: 40,
+                                  width: 40,
+                                  decoration:  BoxDecoration(shape: BoxShape.circle, color: Colors.grey.shade300),
+                                  child: Icon(
+                                    CupertinoIcons.location_fill,
+                                    color: Colors.amber.shade700,
+                                  ))),
+                        ],
+                      ),
                     )),
                 Align(
                     alignment: Alignment.topLeft,

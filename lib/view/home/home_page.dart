@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:circular_menu/circular_menu.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rakta/controller/main_view_model.dart';
@@ -26,7 +27,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<GlobalKey<State<StatefulWidget>>> keys =
   List.generate(6, (index) => GlobalKey());
-  PageController pageController = PageController();
   @override
   Widget build(BuildContext context) {
     return GetBuilder<MainViewModel>(
@@ -45,11 +45,14 @@ class _HomePageState extends State<HomePage> {
                 },
                 color: Colors.white,
                 // border: Border.all(color: Colors.black),
-                widget: Image.asset("assets/bike.png",width: 35,height: 35)),
+              iconColor: Colors.black,
+              icon: Icons.directions_bike_outlined,),
             CircularMenuItem(
                     color: Colors.white,
                     // border: Border.all(color: Colors.black),
-                    widget: Image.asset("assets/boat.png",width: 35,height: 35), onTap: () {
+                iconColor: Colors.black,
+                icon: Icons.directions_boat_filled_outlined,
+                onTap: () {
                   //callback
                 }),
             CircularMenuItem(
@@ -58,18 +61,20 @@ class _HomePageState extends State<HomePage> {
               },
               color: Colors.white,
                 // border: Border.all(color: Colors.black),
-                widget: Image.asset("assets/car.png",width: 35,height: 35),
+              iconColor: Colors.black,
+              icon: CupertinoIcons.car_detailed,
                 ),
             CircularMenuItem(
                 color: Colors.white,
                 // border: Border.all(color: Colors.black),
-                widget: Image.asset("assets/bus.png",width: 35,height: 35), onTap: () {
+                iconColor: Colors.black,
+                icon: Icons.directions_bus_filled_outlined, onTap: () {
               Get.to(()=>SearchScreenBus());
             }),
           ]),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
           bottomNavigationBar: CurvedNavigationBar(
-            index: 2,
+            index: controller.index,
             backgroundColor: Colors.transparent,
             buttonBackgroundColor: Colors.transparent,
             color: Colors.transparent,
@@ -105,7 +110,7 @@ class _HomePageState extends State<HomePage> {
             ],
             onTap: (index) {
               if(index !=2){
-                pageController.jumpToPage(index);
+                controller.pageController.jumpToPage(index);
                 controller.updateIndex(index);
               }
             },
@@ -113,7 +118,7 @@ class _HomePageState extends State<HomePage> {
 
         body: PageView(
           physics: NeverScrollableScrollPhysics(),
-          controller: pageController,
+          controller: controller.pageController,
           children: [
             Home(),
             HomeMapPage(
