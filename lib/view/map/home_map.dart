@@ -1,17 +1,13 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rakta/view/map/places/place_search.dart';
-import 'package:rakta/view/map/widgets/confirm_location.dart';
 import '../../controller/trip_view_model.dart';
-import '../../model/location_model.dart';
 import '../../model/trip_model.dart';
 import '../../utils/app_style.dart';
-import '../../utils/generate_id.dart';
 import '../../utils/var.dart';
 import '../widgets/animation_circle.dart';
 import '../widgets/location_text_filed.dart';
@@ -38,7 +34,7 @@ class _HomeMapPageState extends State<HomeMapPage> {
   TextEditingController locationController = TextEditingController();
   MapType mapType = MapType.normal;
   bool showMarker = true;
-  List<LatLng> ridesPloy =[
+  List<LatLng> ridesPloy = const[
     LatLng( 25.7912747,-304.0482551),
         LatLng( 25.7912619,-304.0480478),
         LatLng( 25.7909215,-304.0480725),

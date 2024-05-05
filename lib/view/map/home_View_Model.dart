@@ -1,15 +1,8 @@
-// ignore_for_file: file_names
-
 import 'dart:async';
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
-
-
 import '../../controller/trip_view_model.dart';
 import '../../model/PlaceModel.dart';
 import '../../model/location_model.dart';
@@ -119,7 +112,7 @@ String fromAddress='';
   }
 
   Future<void> getDrawPolylineGreen(List<LocationModel> tpLocation) async {
-    List<LatLng> polylineCoordinates = [
+    List<LatLng> polylineCoordinates = const[
       LatLng( 25.7966255,55.9706360),
       LatLng( 25.7968719,55.9707111),
       LatLng( 25.7969564,55.9707836),
@@ -299,7 +292,6 @@ String fromAddress='';
   }
 
   Future<void> getDrawPolylineRedLine(List<LocationModel> tpLocation) async {
-    print("helllllo");
     List<LatLng> polylineCoordinates = const[
       LatLng( 25.7964951,55.9707100),
       LatLng( 25.7963454,55.9706584),
@@ -562,7 +554,7 @@ String fromAddress='';
   }
 
   Future<void> getDrawPolylineBlue(List<LocationModel> tpLocation) async {
-    List<LatLng> polylineCoordinates = [
+    List<LatLng> polylineCoordinates =const [
       LatLng( 25.7965386,-304.0293049),
           LatLng( 25.7964915,-304.0292928),
           LatLng( 25.7963442,-304.0293438),
@@ -850,7 +842,7 @@ String fromAddress='';
   }
 
   Future<void> getDrawPolylinePurple(List<LocationModel> tpLocation) async {
-    List<LatLng> polylineCoordinates = [
+    List<LatLng> polylineCoordinates = const[
       // LatLng( 25.7901073,55.9676471),
       // LatLng( 25.7873348,55.9667566),
       LatLng( 25.7870740,55.9666493),

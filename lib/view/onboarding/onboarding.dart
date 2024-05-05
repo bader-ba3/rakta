@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gif/gif.dart';
-import 'package:rakta/view/base/button_widget.dart';
 import 'package:rakta/view/home/home_page.dart';
 
 import '../auth/auth_screen.dart';
-import '../home/home.dart';
 
 class OnBoardingView extends StatefulWidget {
   const OnBoardingView({super.key});

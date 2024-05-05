@@ -1,10 +1,6 @@
 import 'package:flip/flip.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/get_navigation.dart';
 import 'package:glass/glass.dart';
 import 'package:flutter_glow/flutter_glow.dart';
 import 'package:rakta/controller/payment_controller.dart';

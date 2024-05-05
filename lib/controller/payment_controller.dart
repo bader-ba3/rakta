@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
@@ -46,7 +44,7 @@ class PaymentController extends GetxController{
       return true;
     } on PlatformException catch (exception) {
       log(exception.message ?? 'Something went wrong');
-      log(exception.code ?? 'Something went wrong');
+      log(exception.code);
       log(exception.details ?? 'Something went wrong');
     } catch (exception) {
       log(exception.toString());

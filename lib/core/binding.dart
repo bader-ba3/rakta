@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:rakta/controller/bus_view_model.dart';
 import 'package:rakta/controller/main_view_model.dart';
 import 'package:rakta/controller/payment_controller.dart';
 
@@ -16,5 +17,6 @@ class GetBinding extends Bindings {
     Get.put(PlaceViewModel(),);
     Get.put(PaymentController(),);
     Get.put(HomeViewModel());
+    Get.put(BusViewModel());
   }
 }

@@ -1,21 +1,16 @@
 import 'dart:async';
 import 'package:animated_flip_counter/animated_flip_counter.dart';
-import 'package:another_stepper/dto/stepper_data.dart';
-import 'package:another_stepper/widgets/another_stepper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:duration/duration.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lottie/lottie.dart';
 import 'package:rakta/controller/payment_controller.dart';
 import 'package:rakta/model/order_trip_model.dart';
-import 'package:rakta/taxi_old/model/order_model.dart';
 import 'package:rakta/view/map/places/place_search.dart';
 import 'package:rakta/view/taxi/widget/dot_widget.dart';
 import 'package:slider_button/slider_button.dart';
@@ -492,7 +487,7 @@ bool showMarker = true;
                                             children: [
                                               Text("subtotal"),
                                               Spacer(),
-                                              Text(totalPay.toString() + " AED"),
+                                              Text(ordersTripModel.total.toString() + " AED"),
                                             ],
                                           ),
                                           Container(
@@ -503,7 +498,7 @@ bool showMarker = true;
                                             children: [
                                               Text("Add 5% VAT"),
                                               Spacer(),
-                                              Text((totalPay * 0.05).toStringAsFixed(2) + " AED"),
+                                              Text((ordersTripModel.total! * 0.05).toStringAsFixed(2) + " AED"),
                                             ],
                                           ),
                                           Container(
@@ -514,7 +509,7 @@ bool showMarker = true;
                                             children: [
                                               Text("Total"),
                                               Spacer(),
-                                              Text((totalPay + (totalPay * 0.05)).toStringAsFixed(2) + " AED"),
+                                              Text((ordersTripModel.total! + (ordersTripModel.total! * 0.05)).toStringAsFixed(2) + " AED"),
                                             ],
                                           ),
                                         ],

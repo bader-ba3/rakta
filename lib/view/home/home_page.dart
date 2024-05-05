@@ -1,5 +1,4 @@
 import 'dart:math' as math;
-
 import 'package:circular_menu/circular_menu.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,13 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rakta/controller/main_view_model.dart';
 import 'package:rakta/view/bike/bike_screen.dart';
-import 'package:rakta/view/bus/search_page_bus.dart';
 import 'package:rakta/view/card/card.dart';
 import 'package:rakta/view/home/home.dart';
-import 'package:rakta/view/map/places/place_search.dart';
 import 'package:rakta/view/profile/profile.dart';
 import 'package:rakta/view/taxi/taxi_home.dart';
 
+import '../bus/bus_home.dart';
 import '../map/home_map.dart';
 
 //#ba8c0a
@@ -69,7 +67,7 @@ class _HomePageState extends State<HomePage> {
                 // border: Border.all(color: Colors.black),
                 iconColor: Colors.black,
                 icon: Icons.directions_bus_filled_outlined, onTap: () {
-              Get.to(()=>SearchScreenBus());
+              Get.to(()=>BusHomeScreen());
             }),
           ]),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

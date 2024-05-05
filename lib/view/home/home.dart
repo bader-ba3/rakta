@@ -1,21 +1,13 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_glow/flutter_glow.dart';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/get_navigation.dart';
-import 'package:paperfold/paperfold.dart';
 import 'package:rakta/controller/main_view_model.dart';
 import 'package:rakta/utils/hive.dart';
 import 'package:rakta/view/card/payment.dart';
 import 'package:rakta/view/home/news_details.dart';
 import 'package:rakta/view/home/widget/hero_dialog_route.dart';
-import 'package:page_flip/page_flip.dart';
-import '../bus/bus.dart';
-import '../bus/search_page_bus.dart';
+import '../bus/bus_home.dart';
 import 'widget/nfc.dart';
 
 class Home extends StatelessWidget {
@@ -413,7 +405,7 @@ class Home extends StatelessWidget {
       mainController.pageController.jumpToPage(3);
       mainController.updateIndex(3);
       },
-      (){Get.to(()=>SearchScreenBus());},
+      (){Get.to(()=>BusHomeScreen());},
       (){
         MainViewModel mainController = Get.find<MainViewModel>();
         mainController.pageController.jumpToPage(4);

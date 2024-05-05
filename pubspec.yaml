@@ -53,14 +53,21 @@ dependencies:
   another_stepper:
   slider_button:
   animated_flip_counter:
-
-
+  bottom_bar:
+  vertical_scrollable_tabview:
+  scroll_to_index:
+  date_picker_timeline:
+  flutter_svg:
+  permission_handler:
+  syncfusion_flutter_barcodes:
+  flutter_typeahead:
   firebase_core: ^2.24.2
   cloud_firestore: ^4.16.1
   google_maps_flutter:
   location:
   flutter_polyline_points:
   fluttertoast:
+  easy_date_timeline:
   url_launcher:
   google_fonts:
   http:
@@ -70,6 +77,7 @@ dependencies:
   hive_flutter:
   geolocator:
   duration:
+
 
 dev_dependencies:
   flutter_test:

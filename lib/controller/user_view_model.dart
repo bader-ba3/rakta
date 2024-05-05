@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
-
 import '../../model/user_model.dart';
-import '../../utils/data.dart';
 import '../../utils/var.dart';
 
 class UserViewModel extends GetxController {
