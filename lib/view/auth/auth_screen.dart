@@ -130,7 +130,6 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
       }else{
         return Column(
           children: [
-            Text("sigin using application"),
             InkWell(onTap: () async {
               String token = await uaePassPlugin.signIn();
               if(Platform.isIOS){

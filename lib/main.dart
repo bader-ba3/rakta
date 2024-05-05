@@ -6,6 +6,7 @@ import 'package:get/get_navigation/get_navigation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rakta/utils/hive.dart';
 import 'package:rakta/view/home/home_page.dart';
+import 'package:rakta/view/onboarding/onboarding.dart';
 import 'core/binding.dart';
 import 'firebase_options.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -31,8 +32,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       initialBinding: GetBinding(),
-      // home: HiveDataBase.getUserData().name=="null"?OnBoardingView():HomePage(),
-      home: HomePage(),
+      home: HiveDataBase.getUserData().name=="null"?OnBoardingView():HomePage(),
+      // home: HomePage(),
     );
   }
 }
