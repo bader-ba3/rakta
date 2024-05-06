@@ -151,7 +151,8 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                 getData(token);
               }
 
-            }, child: Container(
+            }, child:
+            Container(
               height: 80,
               decoration: BoxDecoration(boxShadow: [
                 BoxShadow(

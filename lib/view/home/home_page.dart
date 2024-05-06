@@ -72,6 +72,12 @@ class _HomePageState extends State<HomePage> {
           ]),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
           bottomNavigationBar: CurvedNavigationBar(
+            letIndexChange: (_){
+              if(_==2){
+                return false;
+              }
+              return true;
+            },
             index: controller.index,
             backgroundColor: Colors.transparent,
             buttonBackgroundColor: Colors.transparent,

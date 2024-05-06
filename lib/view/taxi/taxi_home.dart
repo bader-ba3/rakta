@@ -46,15 +46,27 @@ class _TaxiHomeState extends State<TaxiHome> {
 LatLng? fromLatLng;
 LatLng? toLatLng;
 bool isSqrLoading = false;
+bool isAppleLoading = false;
 String dateTimeString ='';
 double totalPay = 0;
 bool showMarker = true;
-  bool isSelectFrom = true;
-  
+  bool isSelectFrom = false;
+
+
+  @override
+  void initState() {
+    HomeViewModel homeViewModel = Get.find<HomeViewModel>();
+    fromController.text = homeViewModel.fromAddress;
+    fromLatLng =LatLng(homeViewModel.userPosition!.latitude, homeViewModel.userPosition!.longitude);
+    super.initState();
+  }
+
   @override
   void dispose() {
     HomeViewModel homeViewModel = Get.find<HomeViewModel>();
     homeViewModel.markers.removeWhere((key,value) => key.value.contains("marker"));
+
+
     super.dispose();
   }
   
@@ -119,6 +131,8 @@ bool showMarker = true;
                             } else {
                               fromLatLng = argument;
                               fromController.text = places.places!.first.displayName!.text!;
+                              isSelectFrom=false;
+                              setState(() {});
                             }
                           }else{
                             homeViewModel.setMarker(argument, "location_pin", "marker_to", "0", size: 100);
@@ -213,6 +227,7 @@ bool showMarker = true;
                                                 children: [
                                                   Expanded(
                                                     child: TextFormField(
+                                                      enabled: false,
                                                       controller: fromController,
                                                       decoration: InputDecoration.collapsed(hintText: "From"),
                                                     ),
@@ -223,6 +238,7 @@ bool showMarker = true;
                                                         if(_!=null){
                                                           fromController.text = _.name;
                                                           fromLatLng = _.latlng;
+                                                          isSelectFrom=false;
                                                         }
                                                       },
                                                       child: Icon(Icons.search,color: Colors.amber,)),
@@ -252,6 +268,7 @@ bool showMarker = true;
                                                 children: [
                                                   Expanded(
                                                     child: TextFormField(
+                                                      enabled: false,
                                                       controller: toController,
                                                       decoration: InputDecoration.collapsed(hintText: "To"),
                                                     ),
@@ -519,9 +536,8 @@ bool showMarker = true;
                                   Column(
                                     children: [
                                       InkWell(
-                                        onTap:() async {
-                                          if(!isSqrLoading){
-                                            var totalDis = (totalPay + (totalPay * 0.05));
+                                        onTap:isSqrLoading?null:() async {
+                                            double totalDis = double.parse((ordersTripModel!.total! + (ordersTripModel.total! * 0.05)).toStringAsFixed(2));
                                             isSqrLoading = true;
                                             setstate((){});
                                             await Future.delayed(Duration(milliseconds: 1500));
@@ -536,11 +552,7 @@ bool showMarker = true;
                                               content: Text("you don't have enough balance"),
                                             ));
                                           }
-                                            setstate(() {
-
-                                          });
-
-                                          }
+                                            setstate(() {});
                                         },
                                         child: Center(
                                           child: Padding(
@@ -557,20 +569,35 @@ bool showMarker = true;
                                         ),
                                       ),
                                       SizedBox(height: 10,),
-                                      Center(
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                                          child: ApplePayButton(
-                                            onPressed: () async {
-                                              double totalDis = double.parse((totalPay + (totalPay * 0.05)).toStringAsFixed(2));
-                                              PaymentController paymentController  = Get.find<PaymentController>();
-                                             bool _ = await paymentController.handleApplePayPress(context,totalDis);
-                                             if(_){
-                                               FirebaseFirestore.instance.collection("Orders").doc("0").delete();
-                                             }
-                                            }
-                                          ),
-                                        ),
+                                      StatefulBuilder(
+                                        builder: (context,appleSetState) {
+                                          return Center(
+                                            child: Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                              child: isAppleLoading
+                                              ? Container(
+                                                height: 48,
+                                                width: double.infinity,
+                                                decoration:BoxDecoration(color: Colors.black,borderRadius: BorderRadius.circular(5)),
+                                                child: Center(child: CircularProgressIndicator(color: Colors.white,),),
+                                              )
+                                              :ApplePayButton(
+                                                onPressed:isAppleLoading?null: () async {
+                                                  isAppleLoading=true;
+                                                  appleSetState(() {});
+                                                  double totalDis = double.parse((ordersTripModel!.total! + (ordersTripModel.total! * 0.05)).toStringAsFixed(2));
+                                                  PaymentController paymentController  = Get.find<PaymentController>();
+                                                 bool _ = await paymentController.handleApplePayPress(context,totalDis);
+                                                  isAppleLoading=false;
+                                                  appleSetState(() {});
+                                                 if(_){
+                                                   FirebaseFirestore.instance.collection("Orders").doc("0").delete();
+                                                 }
+                                                }
+                                              ),
+                                            ),
+                                          );
+                                        }
                                       ),
                                       
                                     ],
