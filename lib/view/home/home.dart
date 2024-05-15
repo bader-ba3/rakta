@@ -28,10 +28,7 @@ class Home extends StatelessWidget {
       (title: "RAKTA meets with its strategic partners",body:"Ras Al Khaimah Transport Authority (RAKTA) held its first meeting with its strategic partners from various economic and service sectors, which operate in partnership with RAKTA and contribute to providing services to the public from various segments of society. The meeting aimed to expand communication between RAKTA and its partners to strengthen and enhance the bonds of mutual cooperation and emphasize collective work to achieve joint initiatives and projects to contribute to achieving the directives of the wise government in the public interest and enhancing the services provided to the public.", ),
       (title: "Sheikh Khaled Al Qasimi Inaugurates New Building",body: "Sheikh Khalid bin Saud Al Qasimi, Vice Chairman of Ras Al Khaimah’s Investment and Development Office, inaugurated a new facility for Ras Al Khaimah Transport Authority (RAKTA), praising the entity’s accomplishments and pivotal role in enhancing the Emirate’s transport network. The new facility aligns with the vision of His Highness Sheikh Saud bin Saqr Al Qasimi, UAE Supreme Council Member and Ruler of Ras Al Khaimah, to embrace advanced technologies and use them to upgrade the services that the Emirate offers to its residents and visitors, and further strengthen its global standing across various sectors."),
       (title: "RAKTA Launches “RAK Ride”",body: "As part of its efforts to provide integrated and sustainable transportation solutions that facilitate the movement of residents, visitors, and tourists to meet the needs of all community segments, RAKTA has launched the “RAK Ride” express bus service. This service offers direct, non-stop transportation on main operational lines with multiple routes connecting various areas within the emirate, particularly industrial areas to the city center, ensuring fast and efficient transport from the first mile to the last, enabling users to reach their destinations swiftly, comfortably, and safely."),
-
     ];
-
-
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Stack(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:rakta/controller/payment_controller.dart';
+import 'package:rakta/send_review_fun.dart';
 import 'package:rakta/view/bus/bus_successful_payment.dart';
 import 'package:rakta/view/bus/widget/card_field_formatter.dart';
 
@@ -252,20 +253,25 @@ TextEditingController cardCVCController = TextEditingController();
                    if( paymentController.balance-amount>=0){
                      paymentController.addBalance(-amount);
                      busViewModel.addTicket(widget.busTicketModel);
+                     sendReviewMessage();
                      Get.to(()=>BusSuccessfulPayment());
                    }else{
                      Get.snackbar("Error", "you don't have enough balance on your card");
                    }
                   }else if(selected ==2){
-                    paymentController.handleApplePayPress(context, amount).then((value) {
-                      if(value) {
-                        busViewModel.addTicket(widget.busTicketModel);
-                        Get.to(()=>BusSuccessfulPayment());
-                      }
-                    });
+                    busViewModel.addTicket(widget.busTicketModel);
+                    sendReviewMessage();
+                    Get.to(()=>BusSuccessfulPayment());
+                    // paymentController.handleApplePayPress(context, amount).then((value) {
+                    //   if(value) {
+                    //     busViewModel.addTicket(widget.busTicketModel);
+                    //     Get.to(()=>BusSuccessfulPayment());
+                    //   }
+                    // });
                   }else{
                       if(cardNumberController.text.length==19 &&cardHolderController.text.isNotEmpty &&cardDateController.text.length==5 &&cardCVCController.text.length==3){
                         busViewModel.addTicket(widget.busTicketModel);
+                        sendReviewMessage();
                         Get.to(()=>BusSuccessfulPayment());
                       }
                   }
