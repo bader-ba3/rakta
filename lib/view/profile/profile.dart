@@ -31,16 +31,21 @@ class ProfileView extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 20,),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Hero(
-                        tag: "profile_name",
-                        child: Material(
-                            color: Colors.transparent,
-                            child: Text(HiveDataBase.getUserData().name,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 22),))),
-                    Text(HiveDataBase.getUserData().mobile,style: TextStyle(fontWeight:FontWeight.w300,color: Colors.grey.shade800 ),)
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Hero(
+                          tag: "profile_name",
+                          child: Material(
+                              color: Colors.transparent,
+                              child: Text(
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                HiveDataBase.getUserData().name,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 22),))),
+                      Text(HiveDataBase.getUserData().mobile,style: TextStyle(fontWeight:FontWeight.w300,color: Colors.grey.shade800 ),)
+                    ],
+                  ),
                 )
               ],
             ),

@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_glow/flutter_glow.dart';
 import 'package:get/get.dart';
@@ -105,11 +107,14 @@ class Home extends StatelessWidget {
                               SizedBox(
                                 width: 8,
                               ),
-                              Text(
-                                "Hello "+HiveDataBase.getUserData().name,
-                                style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
+                              SizedBox(
+                                width: MediaQuery.sizeOf(context).width-80,
+                                child: Text(
+                                  "Hello "+HiveDataBase.getUserData().name,
+                                  maxLines: 1,
+                                  style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold,overflow: TextOverflow.ellipsis),
+                                ),
                               ),
-                              Spacer(),
                               // Container(
                               //   height: 40,
                               //   width: 40,
