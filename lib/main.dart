@@ -32,8 +32,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       initialBinding: GetBinding(),
-      home: HiveDataBase.getUserData().name=="null"?OnBoardingView():HomePage(),
-      // home: HomePage(),
+      // home: HiveDataBase.getUserData().name=="null"?OnBoardingView():HomePage(),
+      home: HomePage(),
     );
   }
 }

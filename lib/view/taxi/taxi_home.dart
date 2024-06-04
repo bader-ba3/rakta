@@ -125,6 +125,7 @@ class _TaxiHomeState extends State<TaxiHome> {
                           if (isSelectFrom) {
                             homeViewModel.setMarker(argument, "location_icon", "marker_from", "0", size: 100);
                             PlaceModel places = await homeViewModel.getLocationName(argument);
+
                             if (places.places!.isEmpty) {
                               homeViewModel.markers.removeWhere((key, value) => value.position == argument);
                               fromController.clear();
@@ -229,48 +230,45 @@ class _TaxiHomeState extends State<TaxiHome> {
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Container(
-                                            decoration: BoxDecoration(border: Border.all(color: Colors.black), color: Colors.grey.withOpacity(isSelectFrom ? 0.2 : 0), borderRadius: BorderRadius.circular(10)),
-                                            width: 275,
-                                            height: 50,
-                                            child: Center(
-                                              child: Padding(
-                                                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                                child: Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: TextFormField(
-                                                        enabled: false,
-                                                        controller: fromController,
-                                                        decoration: InputDecoration.collapsed(hintText: "From"),
+                                          InkWell(
+                                            onTap: (){
+                                              isSelectFrom = true;
+                                              setstate(() {});
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(border: Border.all(color: Colors.black), color: Colors.grey.withOpacity(isSelectFrom ? 0.2 : 0), borderRadius: BorderRadius.circular(10)),
+                                              width: 275,
+                                              height: 50,
+                                              child: Center(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                                  child: Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: TextFormField(
+                                                          enabled: false,
+                                                          controller: fromController,
+                                                          decoration: InputDecoration.collapsed(hintText: "From"),
+                                                        ),
                                                       ),
-                                                    ),
-                                                    InkWell(
-                                                        onTap: () async {
-                                                          ({LatLng latlng, String name})? _ = await Get.to(PlaceSearchPage());
-                                                          if (_ != null) {
-                                                            fromController.text = _.name;
-                                                            fromLatLng = _.latlng;
-                                                            isSelectFrom = false;
-                                                          }
-                                                        },
-                                                        child: Icon(
-                                                          Icons.search,
-                                                          color: Colors.amber,
-                                                        )),
-                                                    SizedBox(
-                                                      width: 10,
-                                                    ),
-                                                    InkWell(
-                                                        onTap: () async {
-                                                          isSelectFrom = true;
-                                                          setstate(() {});
-                                                        },
-                                                        child: Icon(
-                                                          Icons.location_on,
-                                                          color: Colors.amber,
-                                                        )),
-                                                  ],
+                                                      InkWell(
+                                                          onTap: () async {
+                                                            ({LatLng latlng, String name})? _ = await Get.to(PlaceSearchPage());
+                                                            if (_ != null) {
+                                                              fromController.text = _.name;
+                                                              fromLatLng = _.latlng;
+                                                              isSelectFrom = false;
+                                                            }
+                                                          },
+                                                          child: Icon(
+                                                            Icons.search,
+                                                            color: Colors.amber,
+                                                          )),
+                                                      SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
                                             ),
@@ -278,47 +276,44 @@ class _TaxiHomeState extends State<TaxiHome> {
                                           SizedBox(
                                             height: MediaQuery.sizeOf(context).width / 6,
                                           ),
-                                          Container(
-                                            decoration: BoxDecoration(border: Border.all(color: Colors.black), color: Colors.grey.withOpacity(isSelectFrom ? 0 : 0.2), borderRadius: BorderRadius.circular(10)),
-                                            width: 275,
-                                            height: 50,
-                                            child: Center(
-                                              child: Padding(
-                                                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                                child: Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: TextFormField(
-                                                        enabled: false,
-                                                        controller: toController,
-                                                        decoration: InputDecoration.collapsed(hintText: "To"),
+                                          InkWell(
+                                            onTap: (){
+                                              isSelectFrom = false;
+                                              setstate(() {});
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(border: Border.all(color: Colors.black), color: Colors.grey.withOpacity(isSelectFrom ? 0 : 0.2), borderRadius: BorderRadius.circular(10)),
+                                              width: 275,
+                                              height: 50,
+                                              child: Center(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                                  child: Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: TextFormField(
+                                                          enabled: false,
+                                                          controller: toController,
+                                                          decoration: InputDecoration.collapsed(hintText: "To"),
+                                                        ),
                                                       ),
-                                                    ),
-                                                    InkWell(
-                                                        onTap: () async {
-                                                          ({LatLng latlng, String name})? _ = await Get.to(PlaceSearchPage());
-                                                          if (_ != null) {
-                                                            toController.text = _.name;
-                                                            toLatLng = _.latlng;
-                                                          }
-                                                        },
-                                                        child: Icon(
-                                                          Icons.search,
-                                                          color: Colors.amber,
-                                                        )),
-                                                    SizedBox(
-                                                      width: 10,
-                                                    ),
-                                                    InkWell(
-                                                        onTap: () async {
-                                                          isSelectFrom = false;
-                                                          setstate(() {});
-                                                        },
-                                                        child: Icon(
-                                                          Icons.location_on,
-                                                          color: Colors.amber,
-                                                        )),
-                                                  ],
+                                                      InkWell(
+                                                          onTap: () async {
+                                                            ({LatLng latlng, String name})? _ = await Get.to(PlaceSearchPage());
+                                                            if (_ != null) {
+                                                              toController.text = _.name;
+                                                              toLatLng = _.latlng;
+                                                            }
+                                                          },
+                                                          child: Icon(
+                                                            Icons.search,
+                                                            color: Colors.amber,
+                                                          )),
+                                                      SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
                                             ),
