@@ -110,6 +110,9 @@ class _TaxiHomeState extends State<TaxiHome> {
                         homeViewModel.taxiController = Completer();
                         homeViewModel.taxiController.complete(controller);
                         LatLng userLatLng = LatLng(homeViewModel.userPosition!.latitude, homeViewModel.userPosition!.longitude);
+                        homeViewModel.setMarker(LatLng(25.739519, 55.894028), "car_gry", "car_grya", "30");
+                        homeViewModel.setMarker(LatLng(25.741186, 55.895344), "car_gry", "car_gryaa", "120");
+                        homeViewModel.setMarker(LatLng(25.739764, 55.896192), "car_gry", "car_gry5a", "220");
                         homeViewModel.animateCameraTaxi(userLatLng);
                         if (userTrip.tpRider == null) {
                           homeViewModel.setRiderMarker();
